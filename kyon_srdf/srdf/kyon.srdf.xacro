@@ -1,0 +1,216 @@
+<?xml version="1.0" ?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="kyon">
+
+    <!-- ************ MODEL CONFIGURATION ************ -->
+    <xacro:arg name="config" default="$(find kyon_urdf)/urdf/config/kyon.urdf.xacro"/>
+    <xacro:include filename="$(arg config)"/>
+
+    <group name="base">
+        <link name="pelvis"/>
+    </group>
+
+    <xacro:if value="${ADD_LEGS}">
+    	<xacro:if value="${ADD_WHEELS}">
+			<group name="front_left_leg">
+		        <chain base_link="pelvis" tip_link="wheel_1_link" />
+		    </group>
+		    <group name="front_right_leg">
+		        <chain base_link="pelvis" tip_link="wheel_2_link" />
+		    </group>
+		    <group name="rear_right_leg">
+		        <chain base_link="pelvis" tip_link="wheel_4_link" />
+		    </group>
+		    <group name="rear_left_leg">
+		        <chain base_link="pelvis" tip_link="wheel_3_link" />
+		    </group>
+		</xacro:if>
+		<xacro:if value="${ADD_FEET}">
+		    <group name="front_left_leg">
+		        <chain base_link="pelvis" tip_link="contact_1" />
+		    </group>
+		    <group name="front_right_leg">
+		        <chain base_link="pelvis" tip_link="contact_2" />
+		    </group>
+		    <group name="rear_right_leg">
+		        <chain base_link="pelvis" tip_link="contact_4" />
+		    </group>
+		    <group name="rear_left_leg">
+		        <chain base_link="pelvis" tip_link="contact_3" />
+		    </group>
+		</xacro:if>
+        <xacro:if value="${ADD_STEERING_WHEELS}">
+            <group name="front_left_leg">
+                <chain base_link="pelvis" tip_link="wheel_1_link"/>
+            </group>
+            <group name="front_right_leg">
+		        <chain base_link="pelvis" tip_link="wheel_2_link" />
+		    </group>
+		    <group name="rear_right_leg">
+		        <chain base_link="pelvis" tip_link="wheel_4_link" />
+		    </group>
+		    <group name="rear_left_leg">
+		        <chain base_link="pelvis" tip_link="wheel_3_link" />
+		    </group>
+        </xacro:if>
+    </xacro:if>
+
+    <xacro:if value="${ADD_UPPER_BODY}">
+		<group name="left_arm">
+			<chain base_link="pelvis" tip_link="dagana_1_claw"/>
+		</group>
+		<group name="right_arm">
+			<chain base_link="pelvis" tip_link="dagana_2_claw"/>
+		</group>
+    </xacro:if>
+
+    <!-- <xacro:if value="${ADD_FT_SENSORS}">
+        <group name="ft_sensors">
+            <joint name="knee_pitch_1"/>
+            <joint name="knee_pitch_2"/>
+            <joint name="knee_pitch_3"/>
+            <joint name="knee_pitch_4"/>
+        </group>
+    </xacro:if> -->
+
+    <group name="chains">        <!--THIS HAS TO BE THE LAST GROUP IN THE FILE -->
+        <xacro:if value="${ADD_LEGS}">
+            <group name="front_left_leg" />
+            <group name="front_right_leg" />
+            <group name="rear_right_leg" />
+            <group name="rear_left_leg" />
+
+            <!-- <xacro:if value="${ADD_FT_SENSORS}">
+                <group name="ft_sensors"/>
+            </xacro:if> -->
+        </xacro:if>
+
+        <xacro:if value="${ADD_UPPER_BODY}">
+            <group name="left_arm"/>
+            <group name="right_arm"/>
+        </xacro:if>
+    </group>
+
+    <!-- Homing posture -->
+    <group_state name="home" group="chains">
+        <xacro:if value="${ADD_LEGS}">
+            <joint name="hip_roll_1" value="0.0"/>
+            <joint name="hip_pitch_1" value="0.7"/>
+            <joint name="knee_pitch_1" value="-1.4"/>
+            <joint name="hip_roll_2" value="0.0"/>
+            <joint name="hip_pitch_2" value="-0.7"/>
+            <joint name="knee_pitch_2" value="1.4"/>
+            <joint name="hip_roll_3" value="0.0"/>
+            <joint name="hip_pitch_3" value="0.7"/>
+            <joint name="knee_pitch_3" value="-1.4"/>
+            <joint name="hip_roll_4" value="0.0"/>
+            <joint name="hip_pitch_4" value="-0.7"/>
+            <joint name="knee_pitch_4" value="1.4"/>
+        </xacro:if>
+        <xacro:if value="${ADD_UPPER_BODY}">
+            <joint name="shoulder_yaw_1" value="0.0"/>
+            <joint name="shoulder_pitch_1" value="1.7"/>
+            <joint name="elbow_pitch_1" value="-2.50"/>
+            <joint name="wrist_pitch_1" value="0.75"/>
+            <joint name="wrist_yaw_1" value="0.0"/>
+            <joint name="shoulder_yaw_2" value="0.0"/>
+            <joint name="shoulder_pitch_2" value="-1.70"/>
+            <joint name="elbow_pitch_2" value="2.50"/>
+            <joint name="wrist_pitch_2" value="-0.75"/>
+            <joint name="wrist_yaw_2" value="0.0"/>
+        </xacro:if>
+    </group_state>
+    
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="dagana_1_base" link2="dagana_1_claw" reason="Adjacent"/>
+    <disable_collisions link1="dagana_1_base" link2="elbow_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="dagana_1_base" link2="wrist_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="dagana_1_base" link2="wrist_yaw_1_link" reason="Adjacent"/>
+    <disable_collisions link1="dagana_2_base" link2="dagana_2_claw" reason="Adjacent"/>
+    <disable_collisions link1="dagana_2_base" link2="elbow_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="dagana_2_base" link2="wrist_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="dagana_2_base" link2="wrist_yaw_2_link" reason="Adjacent"/>
+    <disable_collisions link1="elbow_pitch_1_link" link2="shoulder_pitch_1_link" reason="Adjacent"/>
+    <disable_collisions link1="elbow_pitch_1_link" link2="wrist_pitch_1_link" reason="Adjacent"/>
+    <disable_collisions link1="elbow_pitch_2_link" link2="shoulder_pitch_2_link" reason="Adjacent"/>
+    <disable_collisions link1="elbow_pitch_2_link" link2="wrist_pitch_2_link" reason="Adjacent"/>
+    <disable_collisions link1="elbow_pitch_2_link" link2="wrist_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="hip_pitch_3_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="hip_pitch_4_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="hip_roll_1_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="hip_roll_3_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="hip_roll_4_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="knee_pitch_1_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_1_link" link2="pelvis" reason="Default"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="hip_pitch_3_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="hip_pitch_4_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="hip_roll_2_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="hip_roll_3_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="hip_roll_4_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="knee_pitch_2_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_2_link" link2="pelvis" reason="Default"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="hip_roll_1_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="hip_roll_2_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="hip_roll_3_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="knee_pitch_3_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="pelvis" reason="Default"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="shoulder_yaw_1_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_3_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="hip_roll_1_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="hip_roll_2_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="hip_roll_4_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="knee_pitch_4_link" reason="Adjacent"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="pelvis" reason="Default"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="shoulder_yaw_1_link" reason="Never"/>
+    <disable_collisions link1="hip_pitch_4_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="hip_roll_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="hip_roll_3_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="hip_roll_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="knee_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="knee_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="knee_pitch_3_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="knee_pitch_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="pelvis" reason="Adjacent"/>
+    <disable_collisions link1="hip_roll_1_link" link2="shoulder_yaw_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_1_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="hip_roll_3_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="hip_roll_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="knee_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="knee_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="knee_pitch_3_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="knee_pitch_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="pelvis" reason="Adjacent"/>
+    <disable_collisions link1="hip_roll_2_link" link2="shoulder_yaw_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_2_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="hip_roll_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="knee_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="knee_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="knee_pitch_3_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="knee_pitch_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="pelvis" reason="Adjacent"/>
+    <disable_collisions link1="hip_roll_3_link" link2="shoulder_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="shoulder_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="shoulder_yaw_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_3_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="knee_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="knee_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="knee_pitch_3_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="knee_pitch_4_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="pelvis" reason="Adjacent"/>
+    <disable_collisions link1="hip_roll_4_link" link2="shoulder_pitch_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="shoulder_pitch_2_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="shoulder_yaw_1_link" reason="Never"/>
+    <disable_collisions link1="hip_roll_4_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="pelvis" link2="shoulder_yaw_1_link" reason="Adjacent"/>
+    <disable_collisions link1="pelvis" link2="shoulder_yaw_2_link" reason="Adjacent"/>
+    <disable_collisions link1="shoulder_pitch_1_link" link2="shoulder_yaw_1_link" reason="Adjacent"/>
+    <disable_collisions link1="shoulder_pitch_2_link" link2="shoulder_yaw_2_link" reason="Adjacent"/>
+    <disable_collisions link1="shoulder_yaw_1_link" link2="shoulder_yaw_2_link" reason="Never"/>
+    <disable_collisions link1="wrist_pitch_1_link" link2="wrist_yaw_1_link" reason="Adjacent"/>
+    <disable_collisions link1="wrist_pitch_2_link" link2="wrist_yaw_2_link" reason="Adjacent"/>
+</robot>	
+
+
