@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/wjin/forest_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/wjin/forest_ws/install/include/**",
+        "/opt/xbot/include/**",
+        "/home/wjin/forest_ws/src/centauro_cartesio/include/**",
+        "/home/wjin/forest_ws/src/iit-dagana-ros-pkg/dagana_gazebo/include/**",
+        "/home/wjin/forest_ws/src/realsense_gazebo_plugin/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

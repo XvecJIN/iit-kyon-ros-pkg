@@ -8,3 +8,5 @@ xbotcore_devices:
         master: true  # this is a master device for 'joint'
         thread: rt_main
 
+
+
